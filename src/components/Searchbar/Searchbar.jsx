@@ -5,7 +5,7 @@ import Header from './Searchbar.styled';
 const Searchbar = ({ onSubmit }) => {
   const [query, setQuery] = useState('');
 
-  /*method for submiting form*/
+  /*func for submiting form*/
   const handleSubmit = e => {
     e.preventDefault();
 

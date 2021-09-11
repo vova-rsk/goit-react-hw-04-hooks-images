@@ -13,14 +13,14 @@ const ImageGallery = ({ query, statusChanging, setErrorMessage }) => {
   const [modal, setModal] = useState(false);
   const [isLoadMoreBtnShow, setIsLoadMoreBtnShow] = useState(false);
 
-  /*Установка стартовой страницы и обнуление галлереи при смене ключа запроса*/
+  /*setting default values when changing the query-key */
   useEffect(() => {
     if (!query) return;
     setPage(1);
     setSearchResult([]);
   }, [query]);
 
-  /*Запрос с обработкой при смене номера страницы*/
+  /*getting a new group of pictures when changing the page number*/
   useEffect(() => {
     if (!page) return;
 
