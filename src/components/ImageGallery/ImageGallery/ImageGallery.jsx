@@ -7,73 +7,56 @@ import scrollTo from '../../../utils';
 import Modal from '../../Modal';
 import List from './ImageGallery.styled';
 
-const ImageGallery = ({
-  query,
-  statusChanging,
-  setErrorMessage,
-  currentStatus,
-}) => {
+const ImageGallery = ({ query, statusChanging, setErrorMessage }) => {
   const [page, setPage] = useState(null);
   const [searchResult, setSearchResult] = useState([]);
   const [modal, setModal] = useState(false);
-  const [isLoadMoreBtnShow, setIsLoadMoreBtnShow] = useState(true);
+  const [isLoadMoreBtnShow, setIsLoadMoreBtnShow] = useState(false);
 
   /*Установка стартовой страницы и обнуление галлереи при смене ключа запроса*/
   useEffect(() => {
-    if (!query) {
-      return;
-    }
-
+    if (!query) return;
     setPage(1);
     setSearchResult([]);
   }, [query]);
 
-  /*Устаногвка статуса показа кнопки LoadMore в зависимости от состояния приложения*/
-  useEffect(() => {
-    currentStatus === 'resolve'
-      ? setIsLoadMoreBtnShow(true)
-      : setIsLoadMoreBtnShow(true);
-  }, [currentStatus]);
-
   /*Запрос с обработкой при смене номера страницы*/
   useEffect(() => {
-    // const changeStatus = (type) => {
-    //   statusChanging(type);
-    // };
+    if (!page) return;
 
-    if (!page) {
-      return;
-    }
-
-    // statusChanging('pending');
-    // changeStatus('pending');
+    setIsLoadMoreBtnShow(false);
+    statusChanging('pending');
 
     PixabayApi.fetchImages(query, page)
       .then(({ hits, totalHits }) => {
         setSearchResult(state => [...state, ...hits]);
-        // changeStatus('resolved');
+        statusChanging('resolved');
+        setIsLoadMoreBtnShow([...searchResult, ...hits].length < totalHits);
       })
       .catch(error => {
-        // changeStatus('error');
+        setErrorMessage('Oops, Something Went Wrong');
+        statusChanging('error');
       })
       .finally(() => {
         scrollTo();
       });
-  }, [page, query]);
 
-  /*method for showing the modal*/
+    // eslint-disable-next-line
+  }, [page]);
+
+  /*func for showing the modal*/
   const showModal = e => {
     const index = Number(e.currentTarget.dataset.index);
     const currentItem = searchResult.find((item, idx) => idx === index);
     setModal(currentItem);
   };
 
-  /*method for closing the modal*/
+  /*func for closing the modal*/
   const closeModal = () => {
     setModal(false);
   };
 
-  /*method for incrementing the page number by 1*/
+  /*func for incrementing the page number by 1*/
   const handleIncrementPage = () => {
     setPage(page => page + 1);
   };
