@@ -42,7 +42,7 @@ const ImageGallery = ({ query, statusChanging, setErrorMessage }) => {
       });
 
     // eslint-disable-next-line
-  }, [page]);
+  }, [page, query]);
 
   /*func for showing the modal*/
   const showModal = e => {
