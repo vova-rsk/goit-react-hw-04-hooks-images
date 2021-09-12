@@ -95,5 +95,4 @@ ImageGallery.propTypes = {
   query: PropTypes.string.isRequired,
   statusChanging: PropTypes.func.isRequired,
   setErrorMessage: PropTypes.func.isRequired,
-  currentStatus: PropTypes.string.isRequired,
 };

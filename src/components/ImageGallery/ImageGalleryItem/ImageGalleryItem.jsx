@@ -21,8 +21,8 @@ export default ImageGalleryItem;
 
 ImageGalleryItem.propTypes = {
   src: PropTypes.string.isRequired,
+  alt: PropTypes.string.isRequired,
   dataSrc: PropTypes.string.isRequired,
   index: PropTypes.number.isRequired,
-  alt: PropTypes.string.isRequired,
   onClick: PropTypes.func.isRequired,
 };
