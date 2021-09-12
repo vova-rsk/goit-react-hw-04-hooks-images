@@ -29,7 +29,10 @@ const ImageGallery = ({ query, statusChanging, setErrorMessage }) => {
 
     PixabayApi.fetchImages(query, page)
       .then(({ hits, totalHits }) => {
-        setSearchResult(state => [...state, ...hits]);
+        page === 1
+          ? setSearchResult([...hits])
+          : setSearchResult(state => [...state, ...hits]);
+
         statusChanging('resolved');
         setIsLoadMoreBtnShow([...searchResult, ...hits].length < totalHits);
       })
