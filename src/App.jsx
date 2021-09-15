@@ -28,7 +28,6 @@ const App = () => {
   useEffect(() => {
     if (!query) return;
     setPage(1);
-    setGalleryImages([]);
   }, [query]);
 
   /*getting a new group of pictures when changing the page number*/
