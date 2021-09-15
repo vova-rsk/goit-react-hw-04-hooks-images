@@ -4,6 +4,7 @@ import ImageGallery from './components/Gallery/ImageGallery';
 import AppContainer from './App.styled';
 import LoaderSpinner from './components/Loader';
 import Button from './components/Button';
+import Error from './components/Error';
 import PixabayApi from './services/pixabay-api';
 import scrollTo from './utils';
 
@@ -62,7 +63,7 @@ const App = () => {
     <AppContainer>
       <Searchbar onSubmit={newQuery => setQuery(newQuery)} />
       {!isShowError && <ImageGallery images={galleryImages} />}
-      {isShowError && <div>{error}</div>}
+      {isShowError && <Error>{error}</Error>}
       {LoadMoreBtnShow && (
         <Button handleIncrementPage={() => setPage(page => page + 1)} />
       )}
