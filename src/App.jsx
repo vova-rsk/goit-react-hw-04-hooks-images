@@ -21,7 +21,7 @@ const App = () => {
   const [page, setPage] = useState(null);
   const [galleryImages, setGalleryImages] = useState([]);
   const [status, setStatus] = useState(STATUS.IDLE);
-  const [error, setError] = useState('');
+  const errorMessage = useRef('');
   const isLastPage = useRef(false);
 
   /*setting default values when changing the query-key */
@@ -46,7 +46,7 @@ const App = () => {
         setStatus(STATUS.RESOLVED);
       })
       .catch(error => {
-        setError('Oops, Something Went Wrong');
+        errorMessage.current = error.message;
         setStatus(STATUS.ERROR);
       })
       .finally(() => {
@@ -54,15 +54,15 @@ const App = () => {
       });
   }, [page, query]);
 
+  const isError = status === STATUS.ERROR;
   const isShowLoader = status === STATUS.PENDING;
-  const isShowError = status === STATUS.ERROR;
   const isShowButton = status === STATUS.RESOLVED && isLastPage.current;
 
   return (
     <AppContainer>
       <Searchbar onSubmit={newQuery => setQuery(newQuery)} />
-      {!isShowError && <ImageGallery images={galleryImages} />}
-      {isShowError && <Error>{error}</Error>}
+      {!isError && <ImageGallery images={galleryImages} />}
+      {isError && <Error>{errorMessage.current}</Error>}
       {isShowButton && (
         <Button handleIncrementPage={() => setPage(page => page + 1)} />
       )}
