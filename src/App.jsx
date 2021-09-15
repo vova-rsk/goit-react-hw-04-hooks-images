@@ -17,31 +17,23 @@ const STATUS = {
 };
 
 const App = () => {
-  const [query, setQuery] = useState('');
   const [page, setPage] = useState(null);
   const [galleryImages, setGalleryImages] = useState([]);
   const [status, setStatus] = useState(STATUS.IDLE);
+  const searchQuery = useRef('');
   const errorMessage = useRef('');
   const isLastPage = useRef(false);
 
-  /*setting default values when changing the query-key */
-  useEffect(() => {
-    if (!query) return;
-    setPage(1);
-  }, [query]);
-
-  /*getting a new group of pictures when changing the page number*/
   useEffect(() => {
     if (!page) return;
 
     setStatus(STATUS.PENDING);
 
-    PixabayApi.fetchImages(query, page)
+    PixabayApi.fetchImages(searchQuery.current, page)
       .then(({ hits, totalHits }) => {
         page === 1
           ? setGalleryImages([...hits])
           : setGalleryImages(state => [...state, ...hits]);
-
         isLastPage.current = !PixabayApi.isLastPageChecking(page, totalHits);
         setStatus(STATUS.RESOLVED);
       })
@@ -52,15 +44,21 @@ const App = () => {
       .finally(() => {
         scrollTo();
       });
-  }, [page, query]);
+  }, [page]);
 
   const isError = status === STATUS.ERROR;
   const isShowLoader = status === STATUS.PENDING;
   const isShowButton = status === STATUS.RESOLVED && isLastPage.current;
 
+  /*func for updating query-key and reset page*/
+  const onNewQuerySubmit = newQuery => {
+    searchQuery.current = newQuery;
+    setPage(1);
+  };
+
   return (
     <AppContainer>
-      <Searchbar onSubmit={newQuery => setQuery(newQuery)} />
+      <Searchbar onSubmit={onNewQuerySubmit} />
       {!isError && <ImageGallery images={galleryImages} />}
       {isError && <Error>{errorMessage.current}</Error>}
       {isShowButton && (
