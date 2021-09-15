@@ -17,19 +17,18 @@ const STATUS = {
 };
 
 const App = () => {
+  const [query, setQuery] = useState('');
   const [page, setPage] = useState(null);
   const [galleryImages, setGalleryImages] = useState([]);
   const [status, setStatus] = useState(STATUS.IDLE);
-  const searchQuery = useRef('');
   const errorMessage = useRef('');
   const isLastPage = useRef(false);
 
   useEffect(() => {
     if (!page) return;
-
     setStatus(STATUS.PENDING);
 
-    PixabayApi.fetchImages(searchQuery.current, page)
+    PixabayApi.fetchImages(query, page)
       .then(({ hits, totalHits }) => {
         page === 1
           ? setGalleryImages([...hits])
@@ -44,7 +43,7 @@ const App = () => {
       .finally(() => {
         scrollTo();
       });
-  }, [page]);
+  }, [page, query]);
 
   const isError = status === STATUS.ERROR;
   const isShowLoader = status === STATUS.PENDING;
@@ -52,8 +51,10 @@ const App = () => {
 
   /*func for updating query-key and reset page*/
   const onNewQuerySubmit = newQuery => {
-    searchQuery.current = newQuery;
+    if (query === newQuery) return;
+    setQuery(newQuery);
     setPage(1);
+    setGalleryImages([]);
   };
 
   return (
