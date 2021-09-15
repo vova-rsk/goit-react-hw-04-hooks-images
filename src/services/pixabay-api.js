@@ -2,6 +2,7 @@ const KEY = '22441039-e3c3a22ef42346706974d6393';
 const BASE_URL = 'https://pixabay.com/api/';
 const ITEMS_PER_PAGE = 12;
 
+/*func for fetching images*/
 const fetchImages = (query, page) => {
   const searchParams = new URLSearchParams({
     q: query,
@@ -20,6 +21,7 @@ const fetchImages = (query, page) => {
   });
 };
 
+/*func for checking if current page is the last*/
 const isLastPageChecking = (currentPage, totalQuentity) => {
   return currentPage * ITEMS_PER_PAGE >= totalQuentity;
 };
