@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Searchbar from './components/Searchbar';
 import ImageGallery from './components/Gallery/ImageGallery';
 import AppContainer from './App.styled';
@@ -22,7 +22,7 @@ const App = () => {
   const [galleryImages, setGalleryImages] = useState([]);
   const [status, setStatus] = useState(STATUS.IDLE);
   const [error, setError] = useState('');
-  const [LoadMoreBtnShow, setLoadMoreBtnShow] = useState(false);
+  const isLastPage = useRef(false);
 
   /*setting default values when changing the query-key */
   useEffect(() => {
@@ -34,7 +34,6 @@ const App = () => {
   useEffect(() => {
     if (!page) return;
 
-    setLoadMoreBtnShow(false);
     setStatus(STATUS.PENDING);
 
     PixabayApi.fetchImages(query, page)
@@ -43,7 +42,7 @@ const App = () => {
           ? setGalleryImages([...hits])
           : setGalleryImages(state => [...state, ...hits]);
 
-        setLoadMoreBtnShow(!PixabayApi.isLastPageChecking(page, totalHits));
+        isLastPage.current = !PixabayApi.isLastPageChecking(page, totalHits);
         setStatus(STATUS.RESOLVED);
       })
       .catch(error => {
@@ -57,13 +56,14 @@ const App = () => {
 
   const isShowLoader = status === STATUS.PENDING;
   const isShowError = status === STATUS.ERROR;
+  const isShowButton = status === STATUS.RESOLVED && isLastPage.current;
 
   return (
     <AppContainer>
       <Searchbar onSubmit={newQuery => setQuery(newQuery)} />
       {!isShowError && <ImageGallery images={galleryImages} />}
       {isShowError && <Error>{error}</Error>}
-      {LoadMoreBtnShow && (
+      {isShowButton && (
         <Button handleIncrementPage={() => setPage(page => page + 1)} />
       )}
       {isShowLoader && <LoaderSpinner />}
