@@ -1,8 +1,11 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Searchbar from './components/Searchbar';
-import ImageGallery from './components/ImageGallery/ImageGallery';
+import ImageGallery from './components/Gallery/ImageGallery';
 import AppContainer from './App.styled';
 import LoaderSpinner from './components/Loader';
+import Button from './components/Button';
+import PixabayApi from './services/pixabay-api';
+import scrollTo from './utils';
 
 const STATUS = {
   IDLE: 'idle',
@@ -14,39 +17,55 @@ const STATUS = {
 
 const App = () => {
   const [query, setQuery] = useState('');
+  const [page, setPage] = useState(null);
+  const [galleryImages, setGalleryImages] = useState([]);
   const [status, setStatus] = useState(STATUS.IDLE);
   const [error, setError] = useState('');
+  const [LoadMoreBtnShow, setLoadMoreBtnShow] = useState(false);
 
-  /*func for getting query-data from components*/
-  const fetchQueryUpdate = query => {
-    setQuery(query);
-  };
+  /*setting default values when changing the query-key */
+  useEffect(() => {
+    if (!query) return;
+    setPage(1);
+    setGalleryImages([]);
+  }, [query]);
 
-  /*func for setting status in local state*/
-  const statusChanging = statusName => {
-    setStatus(statusName);
-  };
+  /*getting a new group of pictures when changing the page number*/
+  useEffect(() => {
+    if (!page) return;
 
-  /*func for setting error-message in local state*/
-  const setErrorMessage = message => {
-    setError(message);
-  };
+    setLoadMoreBtnShow(false);
+    setStatus(STATUS.PENDING);
 
-  const isShowLoader = status === 'pending' ? true : false;
-  const isShowError = status === STATUS.ERROR ? true : false;
+    PixabayApi.fetchImages(query, page)
+      .then(({ hits, totalHits }) => {
+        page === 1
+          ? setGalleryImages([...hits])
+          : setGalleryImages(state => [...state, ...hits]);
+
+        setLoadMoreBtnShow(!PixabayApi.isLastPageChecking(page, totalHits));
+        setStatus(STATUS.RESOLVED);
+      })
+      .catch(error => {
+        setError('Oops, Something Went Wrong');
+        setStatus(STATUS.ERROR);
+      })
+      .finally(() => {
+        scrollTo();
+      });
+  }, [page, query]);
+
+  const isShowLoader = status === STATUS.PENDING;
+  const isShowError = status === STATUS.ERROR;
 
   return (
     <AppContainer>
-      <Searchbar onSubmit={fetchQueryUpdate} />
-      {!isShowError && (
-        <ImageGallery
-          query={query}
-          statusChanging={statusChanging}
-          setErrorMessage={setErrorMessage}
-          currentStatus={status}
-        />
-      )}
+      <Searchbar onSubmit={newQuery => setQuery(newQuery)} />
+      {!isShowError && <ImageGallery images={galleryImages} />}
       {isShowError && <div>{error}</div>}
+      {LoadMoreBtnShow && (
+        <Button handleIncrementPage={() => setPage(page => page + 1)} />
+      )}
       {isShowLoader && <LoaderSpinner />}
     </AppContainer>
   );

@@ -1,13 +1,11 @@
 import PropTypes from 'prop-types';
 import Li from './ImageGalleryItem.styled';
 
-const ImageGalleryItem = ({ src, alt, dataSrc, index, onClick }) => {
+const ImageGalleryItem = ({ src, alt, onClick }) => {
   return (
     <Li className="ImageGalleryItem">
       <img
         src={src}
-        data-src={dataSrc}
-        data-index={index}
         alt={alt}
         className="ImageGalleryItem-image"
         loading="lazy"
@@ -22,7 +20,5 @@ export default ImageGalleryItem;
 ImageGalleryItem.propTypes = {
   src: PropTypes.string.isRequired,
   alt: PropTypes.string.isRequired,
-  dataSrc: PropTypes.string.isRequired,
-  index: PropTypes.number.isRequired,
   onClick: PropTypes.func.isRequired,
 };
