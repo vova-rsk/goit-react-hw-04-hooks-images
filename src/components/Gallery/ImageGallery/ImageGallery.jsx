@@ -6,7 +6,7 @@ import List from './ImageGallery.styled';
 
 const ImageGallery = ({ images }) => {
   const [selectedImage, setSelectedImage] = useState(null);
-  const modalShow = selectedImage || selectedImage === 0;
+  const modalShow = selectedImage !== null;
 
   return (
     <>
