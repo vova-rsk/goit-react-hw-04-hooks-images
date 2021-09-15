@@ -6,6 +6,7 @@ import List from './ImageGallery.styled';
 
 const ImageGallery = ({ images }) => {
   const [selectedImage, setSelectedImage] = useState(null);
+  const modalShow = selectedImage || selectedImage === 0;
 
   return (
     <>
@@ -20,7 +21,7 @@ const ImageGallery = ({ images }) => {
         ))}
       </List>
 
-      {(selectedImage || selectedImage === 0) && (
+      {modalShow && (
         <Modal
           src={images[selectedImage].largeImageURL}
           alt={images[selectedImage].tags}
